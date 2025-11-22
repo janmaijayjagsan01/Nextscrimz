@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/regular/style.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/bold/style.css"
+    />
+    <link rel="stylesheet" href="/css/navbar.css" />
+    <style>
+      .downbar {
+        padding: 0 2px;
+        padding-bottom: 5px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div class="logo">
+        <i class="ph ph-finn-the-human"></i>
+        <h1>NextScrimz</h1>
+      </div>
+      <nav class="navbar">
+        <ul class="large-nav">
+          <li><a href="/games">Games</a></li>
+          <li><a href="/my-games">My Games</a></li>
+          <li><a href="/leaderboard">Leaderboard</a></li>
+          <li><a href="/history">History</a></li>
+          <li><a href="/profile" class="active">Profile</a></li>
+          <li><a href="/support">Support</a></li>
+        </ul>
+        <ul class="small-nav">
+          <li>
+            <a href="/games"><i class="ph ph-house"></i></a>
+          </li>
+          <li>
+            <a href="/my-games"><i class="ph ph-game-controller"></i></a>
+          </li>
+          <li>
+            <a href="/leaderboard"><i class="ph ph-trophy"></i></a>
+          </li>
+          <li>
+            <a href="/history"><i class="ph ph-clock-counter-clockwise"></i></a>
+          </li>
+          <li>
+            <a href="/profile" class="active"><i class="ph ph-user"></i></a>
+          </li>
+          <li>
+            <a href="/support"><i class="ph ph-headset"></i></a>
+          </li>
+        </ul>
+        <div
+          class="wallet wallet-pulse"
+          onclick="window.location.href='/wallet'"
+        >
+          <i class="ph ph-wallet wallet-icon"></i>
+          <div class="wallet-amount">Rs <%= wallet %></div>
+        </div>
+      </nav>
+    </header>
+    <nav class="downbar">
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a data-link="games" class="nav-link">
+            <i class="ph ph-house nav-icon"></i>
+            <span class="nav-label">Home</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a data-link="my-games" class="nav-link">
+            <i class="ph ph-game-controller nav-icon"></i>
+            <span class="nav-label">Lobby</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a data-link="leaderboard" class="nav-link">
+            <i class="ph ph-trophy nav-icon"></i>
+            <span class="nav-label">Leaderboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a data-link="history" class="nav-link">
+            <i class="ph ph-clock-counter-clockwise nav-icon"></i>
+            <span class="nav-label">History</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a data-link="support" class="nav-link">
+            <i class="ph ph-headset nav-icon"></i>
+            <span class="nav-label">Support</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a data-link="profile" class="nav-link active">
+            <i class="ph ph-user nav-icon"></i>
+            <span class="nav-label">Profile</span>
+            <span class="active-indicator"></span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <script>
+      // Add click event to nav items
+      document.querySelectorAll(".nav-link").forEach((link) => {
+        link.addEventListener("click", function (e) {
+          e.preventDefault();
+
+          // Remove active class from all links
+          document.querySelectorAll(".nav-link").forEach((item) => {
+            item.classList.remove("active");
+          });
+
+          // Add active class to clicked link
+          this.classList.add("active");
+
+          // Add a ripple effect
+          const ripple = document.createElement("span");
+          ripple.style.position = "absolute";
+          ripple.style.borderRadius = "50%";
+          ripple.style.backgroundColor = "rgba(191, 158, 96, 0.3)";
+          ripple.style.transform = "scale(0)";
+          ripple.style.animation = "ripple 0.6s linear";
+          ripple.style.pointerEvents = "none";
+
+          // Set ripple position and size
+          const rect = this.getBoundingClientRect();
+          const size = Math.max(rect.width, rect.height);
+          ripple.style.width = size + "px";
+          ripple.style.height = size + "px";
+          ripple.style.left = e.clientX - rect.left - size / 2 + "px";
+          ripple.style.top = e.clientY - rect.top - size / 2 + "px";
+
+          this.appendChild(ripple);
+
+          // Remove ripple after animation
+          setTimeout(() => {
+            ripple.remove();
+            window.location.href = "/" + this.dataset.link;
+          }, 600);
+        });
+      });
+
+      // Add ripple animation to CSS
+      const style = document.createElement("style");
+      style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(2);
+                    opacity: 0;
+                }
+            }
+        `;
+      document.head.appendChild(style);
+    </script>
+  </body>
+</html>

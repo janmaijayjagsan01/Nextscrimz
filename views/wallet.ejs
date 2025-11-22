@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextScrimz | Wallet</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+    <link rel="stylesheet" href="/css/wallet.css">
+  <link rel="icon" type="image/png" id="logo-header-main" href="/logo/logo.png">
+
+</head>
+
+<body>
+    <%- include('./components/navbars/navbar-games.ejs') %>
+        <%- include('./components/notify-card.ejs') %>
+            <%- include('./components/upi-overlay.ejs', {upi}) %>
+                <%- include('./components/amount-overlay.ejs') %>
+                    <div class="container">
+                        <div class="dashboard">
+                            <div class="card wallet-card">
+                                <div class="card-header">
+                                    <div class="card-title">Current Balance</div>
+                                    <i class="fas fa-ellipsis-h"
+                                        style="color: rgba(255,255,255,0.7); cursor: pointer;"></i>
+                                </div>
+                                <div class="balance">Rs <%= wallet %>
+                                </div>
+
+                                <div class="wallet-actions">
+                                    <button class="btn btn-primary" id="addFundsBtn">
+                                        <i class="fas fa-plus-circle"></i>
+                                        Add Funds
+                                    </button>
+                                    <button class="btn btn-success" id="withdrawFundsBtn">
+                                        <i class="fas fa-exchange-alt"></i>
+                                        Withdraw
+                                    </button>
+                                </div>
+                                <% if (transactions.length >= 1) { %>
+                                    <% if (transactions[0].type==="debit" ) { %>
+                                        <p class="money-info"
+                                            style="color: var(--danger); font-size: 14px; margin-top: 10px;">
+                                            <strong>Please note:</strong> It
+                                            will take up to 8
+                                            hours for your earnings to
+                                            be reflected in your bank account or mobile wallet.
+                                        </p>
+                                        <% } %>
+                                <% } %>
+                            </div>
+
+                            <div class="card">
+                                <div class="section-header">
+                                    <div class="section-title">Transaction History</div>
+                                </div>
+
+                                <div class="transactions">
+                                    <!-- Transaction 1 -->
+                                    <!-- <div class="transaction"> -->
+                                    <!-- <div class="transaction-info"> -->
+                                    <!-- <div class="transaction-icon income"> -->
+                                    <!-- <i class="fas fa-dollar-sign"></i> -->
+                                    <!-- </div> -->
+                                    <!-- <div class="transaction-details"> -->
+                                    <!-- <div class="transaction-name">Salary Deposit</div> -->
+                                    <!-- <div class="transaction-id">ID: #123456789</div> -->
+                                    <!-- <div class="transaction-date">Oct 15, 2023 - 09:30 AM</div> -->
+                                    <!-- </div> -->
+                                    <!-- </div> -->
+                                    <!-- <div> -->
+                                    <!-- <div class="transaction-amount" style="color: var(--success);">+$4,500.00 -->
+                                    <!-- </div> -->
+                                    <!-- <div class="transaction-status completed">Completed</div> -->
+                                    <!-- </div> -->
+                                    <!-- </div> -->
+
+                                    <% transactions.forEach(tx=> { %>
+                                        <div class="transaction">
+                                            <div class="transaction-info">
+                                                <div
+                                                    class="transaction-icon <%= tx.type === 'debit' ? 'expense' : 'income' %>">
+                                                    <% if (tx.source==='topup' ) { %>
+                                                        <i class="fas fa-plus"></i>
+                                                        <% } else if (tx.source==='withdraw' ) { %>
+                                                            <i class="fas fa-money-bill-wave"></i>
+                                                            <% } else if (tx.source==='event_entry' ) { %>
+                                                                <i class="fas fa-ticket-alt"></i>
+                                                                <% } else if (tx.source==='event_prize' ) { %>
+                                                                    <i class="fas fa-trophy"></i>
+                                                                    <% } else { %>
+                                                                        <i class="fas fa-exchange-alt"></i>
+                                                                        <% } %>
+                                                </div>
+
+                                                <div class="transaction-details">
+                                                    <div class="transaction-name">
+                                                        <% if (tx.source==='topup' ) { %>
+                                                            Top Up
+                                                            <% } else if (tx.source==='withdraw' ) { %>
+                                                                Cash Out
+                                                                <% } else if (tx.source==='event_entry' ) { %>
+                                                                    Tournament Entry Fee
+                                                                    <% } else if (tx.source==='event_prize' ) { %>
+                                                                        Tournament Prize
+                                                                        <% } else { %>
+                                                                            Transaction
+                                                                            <% } %>
+                                                    </div>
+                                                    <div class="transaction-id">
+                                                        ID: #<%= tx.transId %>
+                                                    </div>
+                                                    <div class="transaction-date">
+                                                        <%= new Date(tx.date).toLocaleDateString('en-US', {
+                                                            month: 'short' , day: 'numeric' , year: 'numeric' }) %>
+                                                            -
+                                                            <%= new Date(tx.date).toLocaleTimeString('en-US', {
+                                                                hour: '2-digit' , minute: '2-digit' }) %>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <div class="transaction-amount"
+                                                    style="color: <%= tx.type === 'debit' ? 'var(--danger)' : 'var(--success)' %>;">
+                                                    <%= tx.type==='debit' ? '-' : '+' %> ₹<%= tx.amount %>
+                                                </div>
+                                                <div class="transaction-status 
+                <%= tx.status === 'SUCCESS' ? 'completed' : tx.status === 'PENDING' ? 'pending' : 'failed' %>">
+                                                    <%= tx.status.charAt(0).toUpperCase() +
+                                                        tx.status.slice(1).toLowerCase() %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }) %>
+
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- UPI Overlay -->
+                        <div class="upi-overlay" id="upiOverlay">
+                            <div class="upi-modal">
+                                <button class="close-upi" id="closeUpi">&times;</button>
+
+                                <div class="upi-header">
+                                    <h2 class="upi-title">UPI Payment</h2>
+                                </div>
+
+                                <div class="upi-icon">
+                                    <i class="fas fa-money-bill-transfer"></i>
+                                    <p>Enter your UPI ID to complete the transaction</p>
+                                </div>
+
+                                <div class="upi-form">
+                                    <div class="form-group">
+                                        <label class="form-label">UPI ID</label>
+                                        <input type="text" class="form-input" placeholder="yourname@upi" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Amount</label>
+                                        <input type="number" class="form-input" placeholder="Enter amount" min="1"
+                                            step="0.01" required>
+                                    </div>
+
+                                    <div class="upi-buttons">
+                                        <button class="btn-cancel" id="cancelUpi">Cancel</button>
+                                        <button class="btn-submit">Submit Payment</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <footer>
+                            <p>© 2025 NextScrimz Wallet. All rights reserved.</p>
+                        </footer>
+
+                        <script>
+
+                            const upiOverlay = document.getElementById('upiOverlay');
+                            const amountOverlay = document.getElementById('amountOverlay');
+                            const closeUpiBtn = document.getElementById('closeUpi');
+                            const cancelUpiBtn = document.getElementById('cancelUpi');
+                            const closeAmountBtn = document.getElementById('closeAmount');
+                            const cancelAmountBtn = document.getElementById('cancelAmount');
+
+
+                            // Add funds button
+                            document.getElementById('addFundsBtn').addEventListener('click', showAmountOverlay);
+                            //Withdraw funds button
+                            document.getElementById("withdrawFundsBtn").addEventListener("click", showUpiOverlay);
+
+                            function showAmountOverlay() {
+                                console.log("showing")
+                                amountOverlay.classList.add('active');
+                                document.body.style.overflow = 'hidden';
+                            }
+
+                            function showUpiOverlay() {
+                                upiOverlay.classList.add('active');
+                                document.body.style.overflow = 'hidden';
+                            }
+
+                            amountOverlay.addEventListener('click', (e) => {
+                                if (e.target === amountOverlay || e.target === closeAmountBtn || e.target === cancelAmountBtn) {
+                                    console.log("haahah")
+                                    hideAmountOverlay();
+                                }
+                            });
+
+                            upiOverlay.addEventListener('click', (e) => {
+                                if (e.target === upiOverlay || e.target === closeUpiBtn || e.target === cancelUpiBtn) {
+                                    hideUpiOverlay();
+                                }
+                            });
+
+                            function hideAmountOverlay() {
+                                amountOverlay.classList.remove('active');
+                                document.body.style.overflow = 'auto';
+                            }
+                            function hideUpiOverlay() {
+                                upiOverlay.classList.remove('active');
+                                document.body.style.overflow = 'auto';
+                            }
+
+                            document.getElementById("submitFundsAmount").addEventListener("click", handleAddMoneyListener)
+                            document.getElementById("submitFundsUpi").addEventListener("click", handleDrawMoneyListener)
+
+                            function handleAddMoneyListener(e) {
+                                e.preventDefault()
+                                const amount = document.getElementById('addFundsAmount').value;
+                                if (amount >= 5) {
+                                    addBtnStateChange();
+                                    addMoney(amount);
+                                } else {
+                                    return alert("Minimum topup amount is Rs 5")
+                                }
+                            }
+
+                            function handleDrawMoneyListener(e) {
+                                e.preventDefault()
+                                const amount = document.getElementById('withdrawFundsAmount').value;
+                                const upi = document.getElementById('withdrawFundsUpi').value;
+                                if (amount <= 5) {
+                                    alert("Minimum withdraw amount is Rs 5")
+                                } else if (upi.trim().length === 0) {
+                                    alert("UPI is required field!")
+                                } else {
+                                    drawBtnStateChange();
+                                    drawMoney(amount, upi);
+                                }
+                            }
+
+                            function addBtnStateChange() {
+                                document.getElementById('submitFundsAmount').style.display = "none";
+                                document.getElementById("submitFundsAmountLoad").style.display = "block";
+                            }
+                            function originalAddBtnStateChange() {
+                                document.getElementById('submitFundsAmount').style.display = "block";
+                                document.getElementById("submitFundsAmountLoad").style.display = "none";
+                            }
+                            function drawBtnStateChange() {
+                                document.getElementById('submitFundsUpi').style.display = "none";
+                                document.getElementById("submitFundsUpiLoad").style.display = "block";
+                            }
+                            function originalDrawBtnStateChange() {
+                                document.getElementById('submitFundsUpi').style.display = "block";
+                                document.getElementById("submitFundsUpiLoad").style.display = "none";
+                            }
+
+                            async function addMoney(amount) {
+                                const res = await fetch("/add-money", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({
+                                        amount
+                                    })
+                                });
+
+                                const data = await res.json();
+                                console.log("Order Created:", data);
+
+                                if (data.payment_session_id) {
+                                    const cashfree = Cashfree({ mode: "production" });
+                                    // const cashfree = Cashfree({ mode: "sandbox" });
+
+                                    cashfree.checkout({
+                                        paymentSessionId: data.payment_session_id,
+                                        redirectTarget: "_self"
+                                    });
+                                } else {
+                                    sendNotification("error", data.message, "Topup error!");
+                                    location.reload()
+                                }
+                            }
+
+                            async function drawMoney(amount, upi) {
+                                try {
+                                    const res = await fetch("/withdraw-money", {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ amount, upi })
+                                    });
+                                    const data = await res.json();
+
+                                    if (res.ok) {
+                                        location.reload();
+                                    } else {
+                                        sendNotification("error", data.message, "Withdraw error!")
+                                        location.reload();
+                                    }
+                                    console.log("Withdraw Response:", data);
+                                } catch (err) {
+                                    console.log("Error:", err);
+                                }
+                            }
+
+                        </script>
+
+</body>
+
+</html>

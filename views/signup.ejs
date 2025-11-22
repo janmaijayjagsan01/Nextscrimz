@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextScrimz | Signup</title>
+    <link rel="stylesheet" href="/css/signup-upper-part.css">
+    <link rel="stylesheet" href="/css/log-sig-lower-part.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="icon" type="image/png" id="logo-header-main" href="/logo/logo.png">
+
+</head>
+
+<body>
+    <div id="container">
+        <!-- <div class="error-card hide"> -->
+        <!-- <div class="icon"><i class="fa-solid fa-circle-exclamation"></i></div> -->
+        <!-- <div class="text"> -->
+        <!-- <strong id="error-name">Login error!</strong><br> -->
+        <!-- <span id="error-description">Incorrect username or password.</span> -->
+        <!-- </div> -->
+        <!-- </div> -->
+        <%- include('./components/error-card.ejs') %>
+            <div id="upper-part">
+                <div id="form-container">
+                    <div id="login-header">
+                        <div class="login-header-main">Sign up</div>
+                        <div class="login-header-content">Join now to connect, explore, and personalize your experience.
+                        </div>
+                    </div>
+                    <div class="divider">
+                        <hr>
+                        <span>continue with</span>
+                        <hr>
+                    </div>
+                    <div class="form-input">
+                        <input id="ign" type="text" placeholder="IGN (In Game Name)" required>
+                        <input id="phone" type="number" placeholder="Your phone number" required>
+                        <!-- <input id="upi" type="text" placeholder="UPI ID" required> -->
+                        <div class="select-game">
+                            <div class="select-bgmi"><img src="/assets/bgmisvg.svg" alt=""></div>
+                            <div class="select-ff"><img src="/assets/ffsvg.svg" alt=""></div>
+                        </div>
+                        <input id="email" type="text" placeholder="Your email address" required>
+                        <input id="password" type="text" placeholder="Your password" required>
+                        <button id="signup-btn">SIGN UP</button>
+                        <button id="loading-signup-btn" hidden><img src="https://i.gifer.com/ZZ5H.gif" alt="Loading..."
+                                width="20px" style="position: 'absolute'" /></button>
+                        <button id="create-account" onclick="window.location.href = '/login'">ALREADY HAVE AN
+                            ACCOUNT</button>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div id="lower-part">
+                <div class="left-part">
+                    <div class="privacy-links">
+                        <a href="#">COOKIE POLICY</a>
+                        <a href="#">PRIVACY POLICY</a>
+                        <a href="#">TERMS & CONDITIONS</a>
+                        <a href="#">RULES AND REGULATIONS</a>
+                        <a href="#">ABOUT US</a>
+                        <a href="#">FAQ</a>
+                    </div>
+                    <div class="privacy-rights">
+                        © 2025 NEXTSCRIMZ ALL RIGHTS <br>RESERVED.
+                    </div>
+                </div>
+                <div class="right-part">
+                    <div class="logo">
+                        NEXTSCRIMZ<span>.com</span>
+                    </div>
+                    <div class="socials">
+                        <div class="socil-header">FOLLOW US ON:</div>
+                        <div class="socials-link">
+                            <a href="https://youtube.com/@nextscrimz" target="_blank"><i class="fab fa-youtube"></i></a>
+                            <a href="https://instagram.com/nextscrimz" target="_blank"><i class="fab fa-instagram"></i></a>
+                            <a href="#" target="_blank"><i class="fab fa-x-twitter"></i></a>
+                            <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <script>
+        let selectedGame = null;
+        const signupBtn = document.getElementById("signup-btn");
+        const selectBgmi = document.getElementsByClassName("select-bgmi")[0];
+        const selectFf = document.getElementsByClassName("select-ff")[0];
+
+        signupBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            handleSignup();
+        });
+        selectBgmi.addEventListener("click", (e) => {
+            e.preventDefault();
+            disableSelectGame();
+            selectBgmi.style.outline = "2px solid #000000bc"
+            selectedGame = "bgmi";
+        })
+        selectFf.addEventListener("click", (e) => {
+            e.preventDefault();
+            disableSelectGame();
+            selectFf.style.outline = "2px solid #000000bc"
+            selectedGame = "ff";
+        })
+
+        function disableSelectGame() {
+            document.getElementsByClassName("select-bgmi")[0].style.outline = "1px solid rgba(0, 0, 0, 0.23)";
+            document.getElementsByClassName("select-ff")[0].style.outline = "1px solid rgba(0, 0, 0, 0.23)";
+        }
+
+        function disableBtn() {
+            document.getElementById("ign").disabled = true;
+            document.getElementById("email").disabled = true;
+            document.getElementById("password").disabled = true;
+        }
+
+        function enableBtn() {
+            document.getElementById("ign").disabled = false;
+            document.getElementById("email").disabled = false;
+            document.getElementById("password").disabled = false;
+        }
+
+        function originalState() {
+            document.getElementById("loading-signup-btn").style.display = "none";
+            document.getElementById("signup-btn").style.display = "block";
+        }
+
+        function setCardTimeout(eName, eDescription) {
+            let errorName = document.getElementById("error-name");
+            let errorDescription = document.getElementById("error-description");
+            const card = document.getElementsByClassName('error-card')[0];
+
+            errorName.innerText = eName;
+            errorDescription.innerText = eDescription;
+            card.classList.remove("hide");
+
+            setTimeout(() => {
+                card.classList.add('hide');
+            }, 3000);
+        }
+
+        function validateIndianPhone(phone) {
+            phone = phone.trim().replace(/[\s\-()]/g, "");
+
+            if (phone.startsWith("+91")) {
+                phone = phone.slice(3);
+            }
+
+            if (phone.startsWith("91") && phone.length === 12) {
+                phone = phone.slice(2);
+            }
+
+            if (/^[6-9]\d{9}$/.test(phone)) {
+                return phone;
+            }
+
+            return false;
+        }
+
+        function handleSignup() {
+            const userIgn = document.getElementById("ign").value;
+            const userEmail = document.getElementById("email").value;
+            let nonValidPhone = document.getElementById("phone").value.trim();
+            const userGame = selectedGame;
+            const userPassword = document.getElementById("password").value;
+
+            if (userIgn.length === 0 || userPassword.length === 0 || userEmail.length === 0) {
+                return setCardTimeout("Signup error!", "This field is required and cannot be left blank.")
+            }
+            const userPhone = validateIndianPhone(nonValidPhone);
+            if (!userPhone) {
+                return setCardTimeout("Signup error!", "Invalid phone number")
+            }
+
+
+            if (userIgn.length < 4) {
+                return setCardTimeout("Signup error!", "IGN should be atleast 4 characters.")
+            }
+
+            if (userGame === null) {
+                return setCardTimeout("Signup error!", "Please select atleast one game.")
+            }
+
+            if (userPassword.length < 6) {
+                return setCardTimeout("Signup error!", "Password should be atleast 6 characters.")
+            }
+
+            if (userIgn.length >= 60 || userPassword.length >= 60 || userEmail.length >= 60) {
+                return setCardTimeout("Signup error!", "Input exceeds maximum allowed length. Please shorten your entry.")
+            }
+            document.getElementById("loading-signup-btn").style.display = "block";
+            document.getElementById("signup-btn").style.display = "none";
+            disableBtn();
+            sendOTP(userEmail, userIgn, userPassword, userGame, userPhone);
+        }
+
+        async function sendOTP(userEmail, userIgn, userPassword, userGame, userPhone) {
+
+            try {
+                sessionStorage.setItem("email", userEmail);
+                sessionStorage.setItem("user", JSON.stringify({ userEmail, userIgn, userPassword, userGame, userPhone }));
+                const res = await fetch('/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userEmail, ign: userIgn })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    window.location.href = data.redirected;
+                } else {
+                    const data = await res.json();
+                    enableBtn();
+                    originalState();
+                    setCardTimeout(data.name, data.description);
+                }
+            } catch (err) {
+                if (err) {
+                    console.log("Error:", err);
+                    setCardTimeout("Server Error!", "Please reload the page.")
+                }
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
